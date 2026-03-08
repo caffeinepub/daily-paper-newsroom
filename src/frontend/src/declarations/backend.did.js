@@ -13,6 +13,23 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
+export const Reporter = IDL.Record({
+  'id' : IDL.Nat,
+  'active' : IDL.Bool,
+  'beat' : IDL.Text,
+  'name' : IDL.Text,
+  'createdAt' : IDL.Int,
+  'email' : IDL.Text,
+});
+export const Edition = IDL.Record({
+  'id' : IDL.Nat,
+  'status' : IDL.Text,
+  'title' : IDL.Text,
+  'date' : IDL.Text,
+  'createdAt' : IDL.Int,
+  'notes' : IDL.Text,
+  'storyIds' : IDL.Vec(IDL.Nat),
+});
 export const Story = IDL.Record({
   'id' : IDL.Nat,
   'status' : IDL.Text,
@@ -27,6 +44,7 @@ export const Story = IDL.Record({
 });
 export const UserProfile = IDL.Record({ 'name' : IDL.Text });
 export const DashboardSummary = IDL.Record({
+  'totalEditions' : IDL.Nat,
   'pitchCount' : IDL.Nat,
   'inProgressCount' : IDL.Nat,
   'killedCount' : IDL.Nat,
@@ -34,6 +52,7 @@ export const DashboardSummary = IDL.Record({
   'assignedCount' : IDL.Nat,
   'publishedCount' : IDL.Nat,
   'reviewCount' : IDL.Nat,
+  'totalReporters' : IDL.Nat,
   'totalStories' : IDL.Nat,
 });
 export const ScheduleEntry = IDL.Record({
@@ -49,6 +68,16 @@ export const ScheduleEntry = IDL.Record({
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'createEdition' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Vec(IDL.Nat), IDL.Text],
+      [IDL.Nat],
+      [],
+    ),
+  'createReporter' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Bool],
+      [IDL.Nat],
+      [],
+    ),
   'createScheduleEntry' : IDL.Func(
       [IDL.Text, IDL.Opt(IDL.Nat), IDL.Text, IDL.Text, IDL.Text],
       [IDL.Nat],
@@ -67,17 +96,26 @@ export const idlService = IDL.Service({
       [IDL.Nat],
       [],
     ),
+  'deleteEdition' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+  'deleteReporter' : IDL.Func([IDL.Nat], [IDL.Bool], []),
   'deleteScheduleEntry' : IDL.Func([IDL.Nat], [IDL.Bool], []),
   'deleteStory' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+  'getActiveReporters' : IDL.Func([], [IDL.Vec(Reporter)], ['query']),
+  'getAllEditions' : IDL.Func([], [IDL.Vec(Edition)], ['query']),
+  'getAllReporters' : IDL.Func([], [IDL.Vec(Reporter)], ['query']),
   'getAllStories' : IDL.Func([], [IDL.Vec(Story)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getDashboardSummary' : IDL.Func([], [DashboardSummary], ['query']),
+  'getEdition' : IDL.Func([IDL.Nat], [IDL.Opt(Edition)], ['query']),
+  'getRecentStories' : IDL.Func([IDL.Nat], [IDL.Vec(Story)], ['query']),
+  'getReporter' : IDL.Func([IDL.Nat], [IDL.Opt(Reporter)], ['query']),
   'getScheduleEntriesByDate' : IDL.Func(
       [IDL.Text],
       [IDL.Vec(ScheduleEntry)],
       ['query'],
     ),
+  'getStoriesByReporter' : IDL.Func([IDL.Text], [IDL.Vec(Story)], ['query']),
   'getStoriesByStatus' : IDL.Func([IDL.Text], [IDL.Vec(Story)], ['query']),
   'getStory' : IDL.Func([IDL.Nat], [IDL.Opt(Story)], ['query']),
   'getUserProfile' : IDL.Func(
@@ -87,6 +125,16 @@ export const idlService = IDL.Service({
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'updateEdition' : IDL.Func(
+      [IDL.Nat, IDL.Text, IDL.Text, IDL.Text, IDL.Vec(IDL.Nat), IDL.Text],
+      [IDL.Bool],
+      [],
+    ),
+  'updateReporter' : IDL.Func(
+      [IDL.Nat, IDL.Text, IDL.Text, IDL.Text, IDL.Bool],
+      [IDL.Bool],
+      [],
+    ),
   'updateScheduleEntry' : IDL.Func(
       [IDL.Nat, IDL.Text, IDL.Opt(IDL.Nat), IDL.Text, IDL.Text, IDL.Text],
       [IDL.Bool],
@@ -116,6 +164,23 @@ export const idlFactory = ({ IDL }) => {
     'user' : IDL.Null,
     'guest' : IDL.Null,
   });
+  const Reporter = IDL.Record({
+    'id' : IDL.Nat,
+    'active' : IDL.Bool,
+    'beat' : IDL.Text,
+    'name' : IDL.Text,
+    'createdAt' : IDL.Int,
+    'email' : IDL.Text,
+  });
+  const Edition = IDL.Record({
+    'id' : IDL.Nat,
+    'status' : IDL.Text,
+    'title' : IDL.Text,
+    'date' : IDL.Text,
+    'createdAt' : IDL.Int,
+    'notes' : IDL.Text,
+    'storyIds' : IDL.Vec(IDL.Nat),
+  });
   const Story = IDL.Record({
     'id' : IDL.Nat,
     'status' : IDL.Text,
@@ -130,6 +195,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const UserProfile = IDL.Record({ 'name' : IDL.Text });
   const DashboardSummary = IDL.Record({
+    'totalEditions' : IDL.Nat,
     'pitchCount' : IDL.Nat,
     'inProgressCount' : IDL.Nat,
     'killedCount' : IDL.Nat,
@@ -137,6 +203,7 @@ export const idlFactory = ({ IDL }) => {
     'assignedCount' : IDL.Nat,
     'publishedCount' : IDL.Nat,
     'reviewCount' : IDL.Nat,
+    'totalReporters' : IDL.Nat,
     'totalStories' : IDL.Nat,
   });
   const ScheduleEntry = IDL.Record({
@@ -152,6 +219,16 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'createEdition' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Vec(IDL.Nat), IDL.Text],
+        [IDL.Nat],
+        [],
+      ),
+    'createReporter' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Bool],
+        [IDL.Nat],
+        [],
+      ),
     'createScheduleEntry' : IDL.Func(
         [IDL.Text, IDL.Opt(IDL.Nat), IDL.Text, IDL.Text, IDL.Text],
         [IDL.Nat],
@@ -170,17 +247,26 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Nat],
         [],
       ),
+    'deleteEdition' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+    'deleteReporter' : IDL.Func([IDL.Nat], [IDL.Bool], []),
     'deleteScheduleEntry' : IDL.Func([IDL.Nat], [IDL.Bool], []),
     'deleteStory' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+    'getActiveReporters' : IDL.Func([], [IDL.Vec(Reporter)], ['query']),
+    'getAllEditions' : IDL.Func([], [IDL.Vec(Edition)], ['query']),
+    'getAllReporters' : IDL.Func([], [IDL.Vec(Reporter)], ['query']),
     'getAllStories' : IDL.Func([], [IDL.Vec(Story)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getDashboardSummary' : IDL.Func([], [DashboardSummary], ['query']),
+    'getEdition' : IDL.Func([IDL.Nat], [IDL.Opt(Edition)], ['query']),
+    'getRecentStories' : IDL.Func([IDL.Nat], [IDL.Vec(Story)], ['query']),
+    'getReporter' : IDL.Func([IDL.Nat], [IDL.Opt(Reporter)], ['query']),
     'getScheduleEntriesByDate' : IDL.Func(
         [IDL.Text],
         [IDL.Vec(ScheduleEntry)],
         ['query'],
       ),
+    'getStoriesByReporter' : IDL.Func([IDL.Text], [IDL.Vec(Story)], ['query']),
     'getStoriesByStatus' : IDL.Func([IDL.Text], [IDL.Vec(Story)], ['query']),
     'getStory' : IDL.Func([IDL.Nat], [IDL.Opt(Story)], ['query']),
     'getUserProfile' : IDL.Func(
@@ -190,6 +276,16 @@ export const idlFactory = ({ IDL }) => {
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'updateEdition' : IDL.Func(
+        [IDL.Nat, IDL.Text, IDL.Text, IDL.Text, IDL.Vec(IDL.Nat), IDL.Text],
+        [IDL.Bool],
+        [],
+      ),
+    'updateReporter' : IDL.Func(
+        [IDL.Nat, IDL.Text, IDL.Text, IDL.Text, IDL.Bool],
+        [IDL.Bool],
+        [],
+      ),
     'updateScheduleEntry' : IDL.Func(
         [IDL.Nat, IDL.Text, IDL.Opt(IDL.Nat), IDL.Text, IDL.Text, IDL.Text],
         [IDL.Bool],

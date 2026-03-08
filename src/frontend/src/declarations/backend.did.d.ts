@@ -11,6 +11,7 @@ import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
 export interface DashboardSummary {
+  'totalEditions' : bigint,
   'pitchCount' : bigint,
   'inProgressCount' : bigint,
   'killedCount' : bigint,
@@ -18,7 +19,25 @@ export interface DashboardSummary {
   'assignedCount' : bigint,
   'publishedCount' : bigint,
   'reviewCount' : bigint,
+  'totalReporters' : bigint,
   'totalStories' : bigint,
+}
+export interface Edition {
+  'id' : bigint,
+  'status' : string,
+  'title' : string,
+  'date' : string,
+  'createdAt' : bigint,
+  'notes' : string,
+  'storyIds' : Array<bigint>,
+}
+export interface Reporter {
+  'id' : bigint,
+  'active' : boolean,
+  'beat' : string,
+  'name' : string,
+  'createdAt' : bigint,
+  'email' : string,
 }
 export interface ScheduleEntry {
   'id' : bigint,
@@ -48,6 +67,11 @@ export type UserRole = { 'admin' : null } |
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'createEdition' : ActorMethod<
+    [string, string, string, Array<bigint>, string],
+    bigint
+  >,
+  'createReporter' : ActorMethod<[string, string, string, boolean], bigint>,
   'createScheduleEntry' : ActorMethod<
     [string, [] | [bigint], string, string, string],
     bigint
@@ -56,18 +80,35 @@ export interface _SERVICE {
     [string, string, string, string, string, [] | [bigint], string],
     bigint
   >,
+  'deleteEdition' : ActorMethod<[bigint], boolean>,
+  'deleteReporter' : ActorMethod<[bigint], boolean>,
   'deleteScheduleEntry' : ActorMethod<[bigint], boolean>,
   'deleteStory' : ActorMethod<[bigint], boolean>,
+  'getActiveReporters' : ActorMethod<[], Array<Reporter>>,
+  'getAllEditions' : ActorMethod<[], Array<Edition>>,
+  'getAllReporters' : ActorMethod<[], Array<Reporter>>,
   'getAllStories' : ActorMethod<[], Array<Story>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getDashboardSummary' : ActorMethod<[], DashboardSummary>,
+  'getEdition' : ActorMethod<[bigint], [] | [Edition]>,
+  'getRecentStories' : ActorMethod<[bigint], Array<Story>>,
+  'getReporter' : ActorMethod<[bigint], [] | [Reporter]>,
   'getScheduleEntriesByDate' : ActorMethod<[string], Array<ScheduleEntry>>,
+  'getStoriesByReporter' : ActorMethod<[string], Array<Story>>,
   'getStoriesByStatus' : ActorMethod<[string], Array<Story>>,
   'getStory' : ActorMethod<[bigint], [] | [Story]>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'updateEdition' : ActorMethod<
+    [bigint, string, string, string, Array<bigint>, string],
+    boolean
+  >,
+  'updateReporter' : ActorMethod<
+    [bigint, string, string, string, boolean],
+    boolean
+  >,
   'updateScheduleEntry' : ActorMethod<
     [bigint, string, [] | [bigint], string, string, string],
     boolean

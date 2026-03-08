@@ -10,7 +10,9 @@ import { motion } from "motion/react";
 import { Sidebar } from "./components/Sidebar";
 import { useSeedData } from "./hooks/useSeedData";
 import { Dashboard } from "./pages/Dashboard";
+import { Editions } from "./pages/Editions";
 import { PlanningBoard } from "./pages/PlanningBoard";
+import { Reporters } from "./pages/Reporters";
 import { Schedule } from "./pages/Schedule";
 
 // Layout with seed data
@@ -56,10 +58,24 @@ const scheduleRoute = createRoute({
   component: Schedule,
 });
 
+const reportersRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/reporters",
+  component: Reporters,
+});
+
+const editionsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/editions",
+  component: Editions,
+});
+
 const routeTree = rootRoute.addChildren([
   dashboardRoute,
   planningRoute,
   scheduleRoute,
+  reportersRoute,
+  editionsRoute,
 ]);
 
 const router = createRouter({ routeTree });

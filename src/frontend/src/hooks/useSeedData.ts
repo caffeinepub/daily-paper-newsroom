@@ -3,11 +3,44 @@ import { useEffect, useRef } from "react";
 import { useActor } from "./useActor";
 import { useInternetIdentity } from "./useInternetIdentity";
 
+const SAMPLE_REPORTERS = [
+  {
+    name: "Sarah Chen",
+    beat: "Politics",
+    email: "s.chen@dailypaper.com",
+    active: true,
+  },
+  {
+    name: "Marcus Johnson",
+    beat: "Sports",
+    email: "m.johnson@dailypaper.com",
+    active: true,
+  },
+  {
+    name: "Elena Rodriguez",
+    beat: "Business",
+    email: "e.rodriguez@dailypaper.com",
+    active: true,
+  },
+  {
+    name: "Lars Erikson",
+    beat: "National",
+    email: "l.erikson@dailypaper.com",
+    active: true,
+  },
+  {
+    name: "Sofia Marchetti",
+    beat: "Culture",
+    email: "s.marchetti@dailypaper.com",
+    active: true,
+  },
+];
+
 const SAMPLE_STORIES = [
   {
     title: "City Council Votes to Overhaul Public Transit System",
     section: "Front Page",
-    reporter: "Miriam Chen",
+    reporter: "Sarah Chen",
     status: "InProgress",
     priority: "Breaking",
     deadline: BigInt(Date.now() + 2 * 60 * 60 * 1000),
@@ -16,7 +49,7 @@ const SAMPLE_STORIES = [
   {
     title: "Federal Reserve Signals Further Rate Cuts Ahead",
     section: "Business",
-    reporter: "Thomas Reyes",
+    reporter: "Elena Rodriguez",
     status: "Review",
     priority: "High",
     deadline: BigInt(Date.now() + 4 * 60 * 60 * 1000),
@@ -25,7 +58,7 @@ const SAMPLE_STORIES = [
   {
     title: "World Cup Qualifier: National Team Secures Historic Win",
     section: "Sports",
-    reporter: "Anya Okonkwo",
+    reporter: "Marcus Johnson",
     status: "Published",
     priority: "High",
     deadline: BigInt(Date.now() - 1 * 60 * 60 * 1000),
@@ -52,7 +85,7 @@ const SAMPLE_STORIES = [
   {
     title: "Summit Talks on Nuclear Disarmament Resume in Geneva",
     section: "International",
-    reporter: "Kai Watanabe",
+    reporter: "Sarah Chen",
     status: "Assigned",
     priority: "High",
     deadline: BigInt(Date.now() + 3 * 60 * 60 * 1000),
@@ -78,8 +111,15 @@ export function useSeedData() {
           return;
         }
 
-        // Seed stories in parallel
+        // Seed reporters first
         await Promise.all(
+          SAMPLE_REPORTERS.map((r) =>
+            actor.createReporter(r.name, r.beat, r.email, r.active),
+          ),
+        );
+
+        // Seed stories in parallel
+        const storyIds = await Promise.all(
           SAMPLE_STORIES.map((s) =>
             actor.createStory(
               s.title,
@@ -140,8 +180,32 @@ export function useSeedData() {
           ),
         );
 
+        // Seed editions
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toISOString().split("T")[0];
+
+        await Promise.all([
+          actor.createEdition(
+            yesterdayStr,
+            `${yesterday.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })} Edition`,
+            "Yesterday's morning edition. All stories filed and approved.",
+            storyIds.slice(2, 3), // Published story
+            "Published",
+          ),
+          actor.createEdition(
+            today,
+            `${new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })} Edition`,
+            "Today's edition currently in production. Breaking story flagged for front page.",
+            storyIds.slice(0, 2),
+            "InProduction",
+          ),
+        ]);
+
         seeded.current = true;
         void qc.invalidateQueries({ queryKey: ["stories"] });
+        void qc.invalidateQueries({ queryKey: ["reporters"] });
+        void qc.invalidateQueries({ queryKey: ["editions"] });
         void qc.invalidateQueries({ queryKey: ["schedule"] });
         void qc.invalidateQueries({ queryKey: ["dashboard"] });
       } catch {

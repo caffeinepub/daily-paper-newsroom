@@ -177,6 +177,172 @@ export function useDeleteScheduleEntry() {
   });
 }
 
+// ─── Reporters ────────────────────────────────────────────────────────────────
+
+export function useAllReporters() {
+  const { actor, isFetching } = useActor();
+  return useQuery<import("../backend.d").Reporter[]>({
+    queryKey: ["reporters"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getAllReporters();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useCreateReporter() {
+  const { actor } = useActor();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: {
+      name: string;
+      beat: string;
+      email: string;
+      active: boolean;
+    }) => {
+      if (!actor) throw new Error("Not connected");
+      return actor.createReporter(
+        data.name,
+        data.beat,
+        data.email,
+        data.active,
+      );
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["reporters"] });
+      void qc.invalidateQueries({ queryKey: ["dashboard"] });
+    },
+  });
+}
+
+export function useUpdateReporter() {
+  const { actor } = useActor();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: {
+      id: bigint;
+      name: string;
+      beat: string;
+      email: string;
+      active: boolean;
+    }) => {
+      if (!actor) throw new Error("Not connected");
+      return actor.updateReporter(
+        data.id,
+        data.name,
+        data.beat,
+        data.email,
+        data.active,
+      );
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["reporters"] });
+      void qc.invalidateQueries({ queryKey: ["dashboard"] });
+    },
+  });
+}
+
+export function useDeleteReporter() {
+  const { actor } = useActor();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: bigint) => {
+      if (!actor) throw new Error("Not connected");
+      return actor.deleteReporter(id);
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["reporters"] });
+      void qc.invalidateQueries({ queryKey: ["dashboard"] });
+    },
+  });
+}
+
+// ─── Editions ─────────────────────────────────────────────────────────────────
+
+export function useAllEditions() {
+  const { actor, isFetching } = useActor();
+  return useQuery<import("../backend.d").Edition[]>({
+    queryKey: ["editions"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getAllEditions();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useCreateEdition() {
+  const { actor } = useActor();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: {
+      date: string;
+      title: string;
+      notes: string;
+      storyIds: bigint[];
+      status: string;
+    }) => {
+      if (!actor) throw new Error("Not connected");
+      return actor.createEdition(
+        data.date,
+        data.title,
+        data.notes,
+        data.storyIds,
+        data.status,
+      );
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["editions"] });
+      void qc.invalidateQueries({ queryKey: ["dashboard"] });
+    },
+  });
+}
+
+export function useUpdateEdition() {
+  const { actor } = useActor();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: {
+      id: bigint;
+      date: string;
+      title: string;
+      notes: string;
+      storyIds: bigint[];
+      status: string;
+    }) => {
+      if (!actor) throw new Error("Not connected");
+      return actor.updateEdition(
+        data.id,
+        data.date,
+        data.title,
+        data.notes,
+        data.storyIds,
+        data.status,
+      );
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["editions"] });
+      void qc.invalidateQueries({ queryKey: ["dashboard"] });
+    },
+  });
+}
+
+export function useDeleteEdition() {
+  const { actor } = useActor();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: bigint) => {
+      if (!actor) throw new Error("Not connected");
+      return actor.deleteEdition(id);
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["editions"] });
+      void qc.invalidateQueries({ queryKey: ["dashboard"] });
+    },
+  });
+}
+
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 
 export function useDashboardSummary() {

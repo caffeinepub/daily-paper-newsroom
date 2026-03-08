@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
+  BookOpen,
   Calendar,
   Kanban,
   LayoutDashboard,
@@ -8,6 +9,7 @@ import {
   LogOut,
   Menu,
   User,
+  Users,
   X,
 } from "lucide-react";
 import { motion } from "motion/react";
@@ -33,6 +35,18 @@ const NAV_LINKS = [
     icon: Calendar,
     ocid: "nav.schedule.link",
   },
+  {
+    to: "/reporters",
+    label: "Reporters",
+    icon: Users,
+    ocid: "nav.reporters.link",
+  },
+  {
+    to: "/editions",
+    label: "Editions",
+    icon: BookOpen,
+    ocid: "nav.editions.link",
+  },
 ];
 
 export function Sidebar() {
@@ -53,11 +67,11 @@ export function Sidebar() {
         <div className="flex items-center gap-2">
           <img
             src="/assets/generated/newsroom-logo-transparent.dim_80x80.png"
-            alt="Daily Paper"
+            alt="PS Newsroom"
             className="h-7 w-7 object-contain"
           />
           <span className="font-display font-bold text-sidebar-foreground text-base tracking-tight">
-            Daily Paper
+            PS Newsroom
           </span>
         </div>
         <Button
@@ -100,12 +114,12 @@ export function Sidebar() {
           <div className="flex items-center gap-3">
             <img
               src="/assets/generated/newsroom-logo-transparent.dim_80x80.png"
-              alt="Daily Paper Newsroom"
+              alt="PS Newsroom"
               className="h-9 w-9 object-contain"
             />
             <div>
               <h1 className="font-display font-bold text-sidebar-foreground text-base leading-tight tracking-tight">
-                Daily Paper
+                PS Newsroom
               </h1>
               <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground leading-tight">
                 Newsroom

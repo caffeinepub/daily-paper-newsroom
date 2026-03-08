@@ -89,6 +89,15 @@ export class ExternalBlob {
         return this;
     }
 }
+export interface Edition {
+    id: bigint;
+    status: string;
+    title: string;
+    date: string;
+    createdAt: bigint;
+    notes: string;
+    storyIds: Array<bigint>;
+}
 export interface ScheduleEntry {
     id: bigint;
     date: string;
@@ -98,18 +107,13 @@ export interface ScheduleEntry {
     timeSlot: string;
     entryTitle: string;
 }
-export interface DashboardSummary {
-    pitchCount: bigint;
-    inProgressCount: bigint;
-    killedCount: bigint;
-    overdueCount: bigint;
-    assignedCount: bigint;
-    publishedCount: bigint;
-    reviewCount: bigint;
-    totalStories: bigint;
-}
-export interface UserProfile {
+export interface Reporter {
+    id: bigint;
+    active: boolean;
+    beat: string;
     name: string;
+    createdAt: bigint;
+    email: string;
 }
 export interface Story {
     id: bigint;
@@ -123,6 +127,21 @@ export interface Story {
     priority: string;
     reporter: string;
 }
+export interface DashboardSummary {
+    totalEditions: bigint;
+    pitchCount: bigint;
+    inProgressCount: bigint;
+    killedCount: bigint;
+    overdueCount: bigint;
+    assignedCount: bigint;
+    publishedCount: bigint;
+    reviewCount: bigint;
+    totalReporters: bigint;
+    totalStories: bigint;
+}
+export interface UserProfile {
+    name: string;
+}
 export enum UserRole {
     admin = "admin",
     user = "user",
@@ -131,24 +150,37 @@ export enum UserRole {
 export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    createEdition(date: string, title: string, notes: string, storyIds: Array<bigint>, status: string): Promise<bigint>;
+    createReporter(name: string, beat: string, email: string, active: boolean): Promise<bigint>;
     createScheduleEntry(timeSlot: string, storyId: bigint | null, entryTitle: string, notes: string, date: string): Promise<bigint>;
     createStory(title: string, section: string, reporter: string, status: string, priority: string, deadline: bigint | null, notes: string): Promise<bigint>;
+    deleteEdition(id: bigint): Promise<boolean>;
+    deleteReporter(id: bigint): Promise<boolean>;
     deleteScheduleEntry(id: bigint): Promise<boolean>;
     deleteStory(id: bigint): Promise<boolean>;
+    getActiveReporters(): Promise<Array<Reporter>>;
+    getAllEditions(): Promise<Array<Edition>>;
+    getAllReporters(): Promise<Array<Reporter>>;
     getAllStories(): Promise<Array<Story>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getDashboardSummary(): Promise<DashboardSummary>;
+    getEdition(id: bigint): Promise<Edition | null>;
+    getRecentStories(limit: bigint): Promise<Array<Story>>;
+    getReporter(id: bigint): Promise<Reporter | null>;
     getScheduleEntriesByDate(date: string): Promise<Array<ScheduleEntry>>;
+    getStoriesByReporter(reporter: string): Promise<Array<Story>>;
     getStoriesByStatus(status: string): Promise<Array<Story>>;
     getStory(id: bigint): Promise<Story | null>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    updateEdition(id: bigint, date: string, title: string, notes: string, storyIds: Array<bigint>, status: string): Promise<boolean>;
+    updateReporter(id: bigint, name: string, beat: string, email: string, active: boolean): Promise<boolean>;
     updateScheduleEntry(id: bigint, timeSlot: string, storyId: bigint | null, entryTitle: string, notes: string, date: string): Promise<boolean>;
     updateStory(id: bigint, title: string, section: string, reporter: string, status: string, priority: string, deadline: bigint | null, notes: string): Promise<boolean>;
 }
-import type { ScheduleEntry as _ScheduleEntry, Story as _Story, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
+import type { Edition as _Edition, Reporter as _Reporter, ScheduleEntry as _ScheduleEntry, Story as _Story, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async _initializeAccessControlWithSecret(arg0: string): Promise<void> {
@@ -176,6 +208,34 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n1(this._uploadFile, this._downloadFile, arg1));
+            return result;
+        }
+    }
+    async createEdition(arg0: string, arg1: string, arg2: string, arg3: Array<bigint>, arg4: string): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createEdition(arg0, arg1, arg2, arg3, arg4);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createEdition(arg0, arg1, arg2, arg3, arg4);
+            return result;
+        }
+    }
+    async createReporter(arg0: string, arg1: string, arg2: string, arg3: boolean): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createReporter(arg0, arg1, arg2, arg3);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createReporter(arg0, arg1, arg2, arg3);
             return result;
         }
     }
@@ -207,6 +267,34 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async deleteEdition(arg0: bigint): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteEdition(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteEdition(arg0);
+            return result;
+        }
+    }
+    async deleteReporter(arg0: bigint): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteReporter(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteReporter(arg0);
+            return result;
+        }
+    }
     async deleteScheduleEntry(arg0: bigint): Promise<boolean> {
         if (this.processError) {
             try {
@@ -232,6 +320,48 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.deleteStory(arg0);
+            return result;
+        }
+    }
+    async getActiveReporters(): Promise<Array<Reporter>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getActiveReporters();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getActiveReporters();
+            return result;
+        }
+    }
+    async getAllEditions(): Promise<Array<Edition>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAllEditions();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAllEditions();
+            return result;
+        }
+    }
+    async getAllReporters(): Promise<Array<Reporter>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAllReporters();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAllReporters();
             return result;
         }
     }
@@ -291,18 +421,74 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async getEdition(arg0: bigint): Promise<Edition | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getEdition(arg0);
+                return from_candid_opt_n12(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getEdition(arg0);
+            return from_candid_opt_n12(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getRecentStories(arg0: bigint): Promise<Array<Story>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getRecentStories(arg0);
+                return from_candid_vec_n5(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getRecentStories(arg0);
+            return from_candid_vec_n5(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getReporter(arg0: bigint): Promise<Reporter | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getReporter(arg0);
+                return from_candid_opt_n13(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getReporter(arg0);
+            return from_candid_opt_n13(this._uploadFile, this._downloadFile, result);
+        }
+    }
     async getScheduleEntriesByDate(arg0: string): Promise<Array<ScheduleEntry>> {
         if (this.processError) {
             try {
                 const result = await this.actor.getScheduleEntriesByDate(arg0);
-                return from_candid_vec_n12(this._uploadFile, this._downloadFile, result);
+                return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getScheduleEntriesByDate(arg0);
-            return from_candid_vec_n12(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getStoriesByReporter(arg0: string): Promise<Array<Story>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getStoriesByReporter(arg0);
+                return from_candid_vec_n5(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getStoriesByReporter(arg0);
+            return from_candid_vec_n5(this._uploadFile, this._downloadFile, result);
         }
     }
     async getStoriesByStatus(arg0: string): Promise<Array<Story>> {
@@ -323,14 +509,14 @@ export class Backend implements backendInterface {
         if (this.processError) {
             try {
                 const result = await this.actor.getStory(arg0);
-                return from_candid_opt_n16(this._uploadFile, this._downloadFile, result);
+                return from_candid_opt_n18(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getStory(arg0);
-            return from_candid_opt_n16(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n18(this._uploadFile, this._downloadFile, result);
         }
     }
     async getUserProfile(arg0: Principal): Promise<UserProfile | null> {
@@ -375,6 +561,34 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async updateEdition(arg0: bigint, arg1: string, arg2: string, arg3: string, arg4: Array<bigint>, arg5: string): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateEdition(arg0, arg1, arg2, arg3, arg4, arg5);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateEdition(arg0, arg1, arg2, arg3, arg4, arg5);
+            return result;
+        }
+    }
+    async updateReporter(arg0: bigint, arg1: string, arg2: string, arg3: string, arg4: boolean): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateReporter(arg0, arg1, arg2, arg3, arg4);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateReporter(arg0, arg1, arg2, arg3, arg4);
+            return result;
+        }
+    }
     async updateScheduleEntry(arg0: bigint, arg1: string, arg2: bigint | null, arg3: string, arg4: string, arg5: string): Promise<boolean> {
         if (this.processError) {
             try {
@@ -404,8 +618,8 @@ export class Backend implements backendInterface {
         }
     }
 }
-function from_candid_ScheduleEntry_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _ScheduleEntry): ScheduleEntry {
-    return from_candid_record_n14(_uploadFile, _downloadFile, value);
+function from_candid_ScheduleEntry_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _ScheduleEntry): ScheduleEntry {
+    return from_candid_record_n16(_uploadFile, _downloadFile, value);
 }
 function from_candid_Story_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Story): Story {
     return from_candid_record_n7(_uploadFile, _downloadFile, value);
@@ -413,10 +627,16 @@ function from_candid_Story_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8
 function from_candid_UserRole_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
     return from_candid_variant_n11(_uploadFile, _downloadFile, value);
 }
-function from_candid_opt_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [bigint]): bigint | null {
+function from_candid_opt_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Edition]): Edition | null {
     return value.length === 0 ? null : value[0];
 }
-function from_candid_opt_n16(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Story]): Story | null {
+function from_candid_opt_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Reporter]): Reporter | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n17(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [bigint]): bigint | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n18(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Story]): Story | null {
     return value.length === 0 ? null : from_candid_Story_n6(_uploadFile, _downloadFile, value[0]);
 }
 function from_candid_opt_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [bigint]): bigint | null {
@@ -425,7 +645,7 @@ function from_candid_opt_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Ar
 function from_candid_opt_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_UserProfile]): UserProfile | null {
     return value.length === 0 ? null : value[0];
 }
-function from_candid_record_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function from_candid_record_n16(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     id: bigint;
     date: string;
     storyId: [] | [bigint];
@@ -445,7 +665,7 @@ function from_candid_record_n14(_uploadFile: (file: ExternalBlob) => Promise<Uin
     return {
         id: value.id,
         date: value.date,
-        storyId: record_opt_to_undefined(from_candid_opt_n15(_uploadFile, _downloadFile, value.storyId)),
+        storyId: record_opt_to_undefined(from_candid_opt_n17(_uploadFile, _downloadFile, value.storyId)),
         createdAt: value.createdAt,
         notes: value.notes,
         timeSlot: value.timeSlot,
@@ -497,8 +717,8 @@ function from_candid_variant_n11(_uploadFile: (file: ExternalBlob) => Promise<Ui
 }): UserRole {
     return "admin" in value ? UserRole.admin : "user" in value ? UserRole.user : "guest" in value ? UserRole.guest : value;
 }
-function from_candid_vec_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_ScheduleEntry>): Array<ScheduleEntry> {
-    return value.map((x)=>from_candid_ScheduleEntry_n13(_uploadFile, _downloadFile, x));
+function from_candid_vec_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_ScheduleEntry>): Array<ScheduleEntry> {
+    return value.map((x)=>from_candid_ScheduleEntry_n15(_uploadFile, _downloadFile, x));
 }
 function from_candid_vec_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Story>): Array<Story> {
     return value.map((x)=>from_candid_Story_n6(_uploadFile, _downloadFile, x));
