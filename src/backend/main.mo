@@ -8,13 +8,13 @@ import Order "mo:core/Order";
 import Text "mo:core/Text";
 import Runtime "mo:core/Runtime";
 import Principal "mo:core/Principal";
-import Migration "migration";
+
 
 import AccessControl "authorization/access-control";
 import MixinAuthorization "authorization/MixinAuthorization";
 
 // Specify the data migration function in with-clause
-(with migration = Migration.run)
+
 actor {
   // Types
   public type Story = {
