@@ -36,81 +36,81 @@
 
 /* ============================================================
    DESIGN TOKENS — OKLCH (raw L C H, no wrapper)
-   Editorial dark theme: deep ink backgrounds, warm cream text,
-   ink-red accent
+   PS Newsroom theme: deep navy blue backgrounds, bold red accents,
+   professional newsroom blue & red identity
    ============================================================ */
 @layer base {
   :root {
     --radius: 0.25rem;
 
     /* Core palette */
-    --background: 0.13 0.008 240;
-    --foreground: 0.94 0.015 80;
-    --card: 0.17 0.008 240;
-    --card-foreground: 0.94 0.015 80;
-    --popover: 0.19 0.01 240;
-    --popover-foreground: 0.94 0.015 80;
+    --background: 0.14 0.04 240;
+    --foreground: 0.96 0.008 80;
+    --card: 0.18 0.035 240;
+    --card-foreground: 0.96 0.008 80;
+    --popover: 0.20 0.035 240;
+    --popover-foreground: 0.96 0.008 80;
 
-    /* Primary = ink red */
-    --primary: 0.56 0.22 22;
-    --primary-foreground: 0.97 0.01 80;
+    /* Primary = bold red */
+    --primary: 0.55 0.24 22;
+    --primary-foreground: 0.97 0.005 80;
 
-    /* Secondary = dark slate */
-    --secondary: 0.22 0.01 240;
-    --secondary-foreground: 0.86 0.012 80;
+    /* Secondary = mid-blue */
+    --secondary: 0.24 0.04 240;
+    --secondary-foreground: 0.88 0.012 240;
 
     /* Muted */
-    --muted: 0.19 0.008 240;
-    --muted-foreground: 0.60 0.012 240;
+    --muted: 0.20 0.03 240;
+    --muted-foreground: 0.58 0.015 240;
 
-    /* Accent = amber gold */
-    --accent: 0.76 0.14 72;
-    --accent-foreground: 0.13 0.008 240;
+    /* Accent = bright blue */
+    --accent: 0.62 0.18 240;
+    --accent-foreground: 0.97 0.005 80;
 
     /* Destructive */
-    --destructive: 0.58 0.22 22;
-    --destructive-foreground: 0.97 0.01 80;
+    --destructive: 0.55 0.24 22;
+    --destructive-foreground: 0.97 0.005 80;
 
     /* Borders & inputs */
-    --border: 0.28 0.008 240;
-    --input: 0.24 0.008 240;
-    --ring: 0.56 0.22 22;
+    --border: 0.26 0.025 240;
+    --input: 0.22 0.03 240;
+    --ring: 0.55 0.24 22;
 
     /* Charts */
-    --chart-1: 0.56 0.22 22;
-    --chart-2: 0.76 0.14 72;
-    --chart-3: 0.65 0.12 162;
-    --chart-4: 0.72 0.15 220;
+    --chart-1: 0.55 0.24 22;
+    --chart-2: 0.62 0.18 240;
+    --chart-3: 0.70 0.15 162;
+    --chart-4: 0.75 0.14 72;
     --chart-5: 0.62 0.18 290;
 
     /* Sidebar */
-    --sidebar: 0.11 0.008 240;
-    --sidebar-foreground: 0.94 0.015 80;
-    --sidebar-primary: 0.56 0.22 22;
-    --sidebar-primary-foreground: 0.97 0.01 80;
-    --sidebar-accent: 0.18 0.01 240;
-    --sidebar-accent-foreground: 0.86 0.012 80;
-    --sidebar-border: 0.22 0.008 240;
-    --sidebar-ring: 0.56 0.22 22;
+    --sidebar: 0.10 0.04 240;
+    --sidebar-foreground: 0.96 0.008 80;
+    --sidebar-primary: 0.55 0.24 22;
+    --sidebar-primary-foreground: 0.97 0.005 80;
+    --sidebar-accent: 0.18 0.035 240;
+    --sidebar-accent-foreground: 0.88 0.012 240;
+    --sidebar-border: 0.20 0.03 240;
+    --sidebar-ring: 0.55 0.24 22;
 
     /* Newsroom-specific */
-    --breaking: 0.58 0.24 22;
+    --breaking: 0.55 0.24 22;
     --breaking-fg: 0.97 0 0;
     --high: 0.68 0.17 52;
     --high-fg: 0.13 0 0;
-    --medium: 0.78 0.14 82;
+    --medium: 0.76 0.14 82;
     --medium-fg: 0.13 0 0;
-    --low: 0.48 0.01 240;
-    --low-fg: 0.90 0.01 240;
+    --low: 0.50 0.015 240;
+    --low-fg: 0.92 0.01 240;
 
     --published: 0.62 0.15 155;
     --published-fg: 0.13 0 0;
-    --inprogress: 0.64 0.14 225;
+    --inprogress: 0.62 0.18 240;
     --inprogress-fg: 0.13 0 0;
     --review: 0.72 0.14 72;
     --review-fg: 0.13 0 0;
-    --killed: 0.42 0.01 240;
-    --killed-fg: 0.75 0.01 240;
+    --killed: 0.44 0.015 240;
+    --killed-fg: 0.78 0.01 240;
   }
 
   * {
