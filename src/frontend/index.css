@@ -1,0 +1,215 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   FONT FACES — self-hosted woff2
+   ============================================================ */
+@font-face {
+  font-family: "Playfair Display";
+  src: url("/assets/fonts/PlayfairDisplay-VariableFont_wght.woff2") format("woff2");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Playfair Display";
+  src: url("/assets/fonts/PlayfairDisplay-Italic-VariableFont_wght.woff2") format("woff2");
+  font-weight: 400 900;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "General Sans";
+  src: url("/assets/fonts/GeneralSans-Variable.woff2") format("woff2");
+  font-weight: 200 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/assets/fonts/JetBrainsMono-Variable.woff2") format("woff2");
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================================================
+   DESIGN TOKENS — OKLCH (raw L C H, no wrapper)
+   Editorial dark theme: deep ink backgrounds, warm cream text,
+   ink-red accent
+   ============================================================ */
+@layer base {
+  :root {
+    --radius: 0.25rem;
+
+    /* Core palette */
+    --background: 0.13 0.008 240;
+    --foreground: 0.94 0.015 80;
+    --card: 0.17 0.008 240;
+    --card-foreground: 0.94 0.015 80;
+    --popover: 0.19 0.01 240;
+    --popover-foreground: 0.94 0.015 80;
+
+    /* Primary = ink red */
+    --primary: 0.56 0.22 22;
+    --primary-foreground: 0.97 0.01 80;
+
+    /* Secondary = dark slate */
+    --secondary: 0.22 0.01 240;
+    --secondary-foreground: 0.86 0.012 80;
+
+    /* Muted */
+    --muted: 0.19 0.008 240;
+    --muted-foreground: 0.60 0.012 240;
+
+    /* Accent = amber gold */
+    --accent: 0.76 0.14 72;
+    --accent-foreground: 0.13 0.008 240;
+
+    /* Destructive */
+    --destructive: 0.58 0.22 22;
+    --destructive-foreground: 0.97 0.01 80;
+
+    /* Borders & inputs */
+    --border: 0.28 0.008 240;
+    --input: 0.24 0.008 240;
+    --ring: 0.56 0.22 22;
+
+    /* Charts */
+    --chart-1: 0.56 0.22 22;
+    --chart-2: 0.76 0.14 72;
+    --chart-3: 0.65 0.12 162;
+    --chart-4: 0.72 0.15 220;
+    --chart-5: 0.62 0.18 290;
+
+    /* Sidebar */
+    --sidebar: 0.11 0.008 240;
+    --sidebar-foreground: 0.94 0.015 80;
+    --sidebar-primary: 0.56 0.22 22;
+    --sidebar-primary-foreground: 0.97 0.01 80;
+    --sidebar-accent: 0.18 0.01 240;
+    --sidebar-accent-foreground: 0.86 0.012 80;
+    --sidebar-border: 0.22 0.008 240;
+    --sidebar-ring: 0.56 0.22 22;
+
+    /* Newsroom-specific */
+    --breaking: 0.58 0.24 22;
+    --breaking-fg: 0.97 0 0;
+    --high: 0.68 0.17 52;
+    --high-fg: 0.13 0 0;
+    --medium: 0.78 0.14 82;
+    --medium-fg: 0.13 0 0;
+    --low: 0.48 0.01 240;
+    --low-fg: 0.90 0.01 240;
+
+    --published: 0.62 0.15 155;
+    --published-fg: 0.13 0 0;
+    --inprogress: 0.64 0.14 225;
+    --inprogress-fg: 0.13 0 0;
+    --review: 0.72 0.14 72;
+    --review-fg: 0.13 0 0;
+    --killed: 0.42 0.01 240;
+    --killed-fg: 0.75 0.01 240;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: oklch(var(--background));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: oklch(var(--border));
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: oklch(var(--muted-foreground));
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: "Playfair Display", Georgia, serif;
+  }
+  .font-mono-news {
+    font-family: "JetBrains Mono", monospace;
+  }
+
+  /* Newspaper column rule */
+  .column-rule {
+    border-right: 1px solid oklch(var(--border));
+  }
+
+  /* Ink texture overlay */
+  .ink-texture {
+    position: relative;
+  }
+  .ink-texture::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Masthead rule */
+  .masthead-rule {
+    border-bottom: 3px double oklch(var(--border));
+  }
+
+  /* Priority badges */
+  .badge-breaking {
+    background-color: oklch(var(--breaking));
+    color: oklch(var(--breaking-fg));
+  }
+  .badge-high {
+    background-color: oklch(var(--high));
+    color: oklch(var(--high-fg));
+  }
+  .badge-medium {
+    background-color: oklch(var(--medium));
+    color: oklch(var(--medium-fg));
+  }
+  .badge-low {
+    background-color: oklch(var(--low));
+    color: oklch(var(--low-fg));
+  }
+  .badge-published {
+    background-color: oklch(var(--published));
+    color: oklch(var(--published-fg));
+  }
+  .badge-inprogress {
+    background-color: oklch(var(--inprogress));
+    color: oklch(var(--inprogress-fg));
+  }
+  .badge-review {
+    background-color: oklch(var(--review));
+    color: oklch(var(--review-fg));
+  }
+  .badge-killed {
+    background-color: oklch(var(--killed));
+    color: oklch(var(--killed-fg));
+  }
+  .badge-pitch {
+    background-color: oklch(var(--secondary));
+    color: oklch(var(--secondary-foreground));
+    border: 1px solid oklch(var(--border));
+  }
+  .badge-assigned {
+    background-color: oklch(0.72 0.1 290);
+    color: oklch(0.13 0 0);
+  }
+}
